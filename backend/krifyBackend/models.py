@@ -1,0 +1,71 @@
+from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+class Projects(models.Model):
+    image = models.ImageField(upload_to="photos/")
+    links = models.CharField(max_length=555)
+    title = models.CharField(max_length=255)
+    para = models.CharField(max_length=555)
+    rate = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.title}, {self.rate}"
+    
+class ProjectsInfo(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Ongoing', 'Ongoing'),
+        ('Completed', 'Completed'),
+        ('On Hold', 'On Hold'),
+        ('Cancelled', 'Cancelled'),
+    ]
+
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, related_name="project_info")
+    category = models.CharField(max_length=255)
+    start_date = models.DateField()
+    deadline = models.DateField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+
+    def __str__(self):
+        return f"{self.project.title} - {self.status}"
+
+class empollyDeatiles(models.Model):
+    ROLE_CHOICES = [
+        ('CEO', 'CEO'),
+        ('HR', 'HR'),
+        ('Manager', 'Manager'),
+        ('Developer', 'Developer'),
+        ('Tester', 'Tester'),
+        ('UXI Developer', 'UXI Developer'),
+    ]
+    propic = models.ImageField(upload_to="photos/")
+    Ename = models.CharField(max_length=225)
+    Eemail = models.EmailField()
+    password = models.CharField(max_length=255)
+    phone = models.IntegerField(unique=True)
+    Eid = models.CharField(unique=True, max_length=255)
+    roll = models.CharField(max_length=255, choices=ROLE_CHOICES)
+    experience = models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(45)])
+    currentProject = models.ForeignKey(Projects, on_delete=models.SET_NULL, blank=True, null=True , related_name="assend_employee")
+    def __str__(self):
+        return f"{self.Ename} {self.roll}"
+    
+
+class Interns(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    password = models.CharField(max_length=555)
+    phone = models.IntegerField(unique=True)
+    Iid = models.CharField(max_length=100, unique=True)
+    course = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class projectTeams(models.Model):
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, related_name="project_team")
+    Ename = models.ForeignKey(empollyDeatiles, on_delete=models.CASCADE, related_name="p_member")
+
+    def __str__(self):
+        return f"{self.Ename.Ename} in {self.project.project.title} project"
