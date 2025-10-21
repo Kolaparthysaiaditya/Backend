@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     "corsheaders",
-    "faceapp",
     "krifyBackend",
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata' 
 
 USE_I18N = True
 
@@ -156,4 +156,6 @@ EMAIL_USE_SSL = False               # Set True if using SSL port 465
 EMAIL_HOST_USER = 'kolaparthysaiaditya@gmail.com'   # Your email address
 EMAIL_HOST_PASSWORD = 'mhiz ryon akpo guoz'  # Your email password or app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER       # Default sender
+
+
 
