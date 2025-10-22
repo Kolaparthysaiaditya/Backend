@@ -4,6 +4,10 @@ from datetime import datetime
 from django.utils import timezone
 from math import radians, sin, cos, sqrt, atan2
 from datetime import datetime, timedelta
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.response import Response
@@ -115,12 +119,16 @@ def employ_login(request):
     serializer = EmployLoginSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.validated_data
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
         return Response({
             "message": "Login successful",
             "Eemail":user.Eemail,
             "Ename": user.Ename,
             "Eid": user.Eid,
             "roll": user.roll,
+            "access": access_token,
+            "refresh": str(refresh),
         })
     return Response(serializer.errors, status=400)
 
@@ -429,8 +437,6 @@ def get_all_intern_attadence(request):
         })
     return Response(data)
 
-
-
 @api_view(['POST'])
 def mark_attendance(request):
     Eid = request.data.get("Eid")
@@ -445,7 +451,9 @@ def mark_attendance(request):
     except empollyDeatiles.DoesNotExist:
         return Response({"error": "Employee not found"}, status=404)
 
-    date_today = timezone.now().date()  # ✅ only date, not datetime
+    # ✅ Use IST timezone
+    IST = pytz.timezone('Asia/Kolkata')
+    date_today = timezone.now().astimezone(IST).date()
 
     if EmployeeAttendance.objects.filter(employee=employee, date=date_today).exists():
         return Response({"error": "Attendance already marked for today"}, status=400)
@@ -459,11 +467,13 @@ def mark_attendance(request):
         employee=employee,
         status=status,
         check_in=check_in_time,
-        date=date_today  # explicitly set date as date object
+        date=date_today  # explicitly set IST date
     )
 
     serializer = EmployeeAttendanceSerializer(attendance)
     return Response({"message": "Attendance marked", "data": serializer.data}, status=201)
+
+
 
 @api_view(['POST'])
 def mark_checkout(request):
