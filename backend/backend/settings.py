@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
+    'cloudinary',
+    'cloudinary_storage',
     "corsheaders",
     "krifyBackend",
     'import_export',
@@ -158,5 +160,13 @@ EMAIL_USE_SSL = False               # Set True if using SSL port 465
 EMAIL_HOST_USER = 'kolaparthysaiaditya@gmail.com'   # Your email address
 EMAIL_HOST_PASSWORD = 'mhiz ryon akpo guoz'  # Your email password or app password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER       # Default sender
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUD_NAME'),
+    'API_KEY': os.environ.get('API_KEY'),
+    'API_SECRET': os.environ.get('API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
